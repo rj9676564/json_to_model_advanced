@@ -1,0 +1,8 @@
+builders:
+  json_to_model_advanced_generator:
+    import: "package:json_to_model_advanced_generator/json_to_model_advanced_generator.dart"
+    builder_factories: ["retrofitBuilder"]
+    build_extensions: { ".dart": [".retrofit.g.part"] }
+    auto_apply: dependents
+    build_to: cache
+    applies_builders: ["source_gen|combining_builder"]

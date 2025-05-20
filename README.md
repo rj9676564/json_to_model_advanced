@@ -1,39 +1,42 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
-
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
-```dart
-const like = 'sample';
+```yaml
+dependencies:
+  json_to_model_advanced: ^0.0.1
+dev_dependencies:
+  json_to_model_advanced_generator: ^0.0.1
 ```
 
-## Additional information
+## Model
+```dart
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+@JsonSerializable()
+class Task {
+  const Task({this.id, this.name, this.avatar, this.createdAt});
+
+  factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
+
+  final String? id;
+  final String? name;
+  final String? avatar;
+  final String? createdAt;
+
+  Map<String, dynamic> toJson() => _$TaskToJson(this);
+}
+```
+wrapperType your BaseModel 
+fromJson jsonToModel name
+```dart
+@JsonToModel(wrapperType: 'BaseResult', wrapperFromJson: 'fromJson')
+abstract class JsonClient {
+factory JsonClient() = _JsonClient;
+
+BaseResult<List<Task>> getTasks(Map<String,dynamic> json);
+BaseResult<List<ClassesStudents>> getClassesStudents(Map<String,dynamic> json);
+}
+```
+Run 
+- flutter pub run build_runner build --delete-conflicting-outputs
+
+- flutter pub run build_runner build
+
+
+

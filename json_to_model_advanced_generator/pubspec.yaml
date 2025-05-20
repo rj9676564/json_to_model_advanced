@@ -1,0 +1,25 @@
+name: json_to_model_advanced_generator
+description: retrofit generator is an dio client generator using source_gen and inspired by Chopper and Retrofit.
+homepage: https://github.com/rj9676564/json_to_model_advanced_generator
+repository: https://github.com/rj9676564/json_to_model_advanced_generator
+topics:
+  - codegen
+version: 0.0.3
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  analyzer: ^6.5.0
+  build: ^2.4.1
+  built_collection: ^5.1.1
+  code_builder: ^4.4.0
+  dart_style: ^2.3.0
+  source_gen: ^1.5.0
+  logging: ^1.2.0 
+  json_to_model_advanced: ^0.0.3
+
+
+dev_dependencies:
+  lints: ^4.0.0
+  source_gen_test: ^1.0.6
+  test: ^1.25.0

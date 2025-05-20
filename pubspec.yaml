@@ -1,10 +1,10 @@
-name: json_2_model
-description: "json_2_model"
-repository: https://github.com/rj9676564/json_model_generator
-version: 0.0.1
-homepage:
+name: json_to_model_advanced
+description: "json_to_model"
+repository: https://github.com/rj9676564/json_to_model_advanced
+version: 0.0.3
+homepage: https://github.com/rj9676564/json_model_generator
 environment:
-  sdk: ^3.5.4
+  sdk: ^3.5.0
   flutter: ">=1.17.0"
 
 dependencies:
