@@ -4,7 +4,7 @@ homepage: https://github.com/rj9676564/json_to_model_advanced_generator
 repository: https://github.com/rj9676564/json_to_model_advanced_generator
 topics:
   - codegen
-version: 0.0.3
+version: 0.0.4
 environment:
   sdk: '>=3.3.0 <4.0.0'
 
