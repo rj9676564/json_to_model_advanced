@@ -1,8 +1,8 @@
 ```yaml
 dependencies:
-  json_to_model_advanced: ^0.0.1
+  json_to_model_advanced: ^0.0.3
 dev_dependencies:
-  json_to_model_advanced_generator: ^0.0.1
+  json_to_model_advanced_generator: ^0.0.4
 ```
 
 ## Model
