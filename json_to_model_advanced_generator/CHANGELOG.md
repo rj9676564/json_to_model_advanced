@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.0
+- fix health issues
+- 
 ## 0.0.5
 
 - fix health issues

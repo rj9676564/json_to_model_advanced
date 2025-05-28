@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:build/build.dart';
-import 'package:logging/logging.dart'; // For logging
+import 'package:logging/logging.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dart_style/dart_style.dart';
@@ -29,28 +29,25 @@ class Json2ModelGenerator extends GeneratorForAnnotation<JsonToModel> {
 
     // Ensure the element is a class; skip if not
     if (element is! ClassElement) {
-      _logger
-          .warning('Element ${element.name} is not a ClassElement, skipping.');
+      _logger.warning('Element ${element.name} is not a ClassElement, skipping.');
       return '';
     }
 
-    // Cast element to ClassElement and extract class name
-    final classElement = element as ClassElement;
+    // No cast needed since 'element is ClassElement' check ensures type
+    final classElement = element;
     final className = classElement.name;
     final implClassName = '_$className'; // Generated implementation class name
 
     _logger.info('Generating implementation for class: $className');
 
     // Read annotation parameters for wrapper type and fromJson method
-    final wrapperType = annotation.read('wrapperType').stringValue ?? null;
-    final wrapperFromJson =
-        annotation.read('wrapperFromJson').stringValue ?? 'fromJson';
+    final wrapperType = annotation.read('wrapperType').stringValue;
+    final wrapperFromJson = annotation.read('wrapperFromJson').stringValue;
     _logger.info(
         'Annotation config: wrapperType=$wrapperType, wrapperFromJson=$wrapperFromJson');
 
     // Buffer to build the generated Dart code
     final buffer = StringBuffer();
-    // Start the implementation class
     buffer.writeln('// Generated implementation class for $className');
     buffer.writeln('class $implClassName implements $className {');
 
@@ -65,12 +62,12 @@ class Json2ModelGenerator extends GeneratorForAnnotation<JsonToModel> {
       _logger.info(
           'Processing method: ${method.name} with return type: ${method.returnType}');
 
-      // Get the return type and method parameters
-      final returnType =
-      method.returnType.getDisplayString(withNullability: false);
+      // Extract return type without nullability annotations (default behavior)
+      final returnType = method.returnType.getDisplayString();
       final methodName = method.name;
       final parameters = method.parameters.map((param) {
-        final type = param.type.getDisplayString(withNullability: false);
+        // Extract parameter type without nullability annotations
+        final type = param.type.getDisplayString();
         return '$type ${param.name}';
       }).join(', ');
 
@@ -81,15 +78,15 @@ class Json2ModelGenerator extends GeneratorForAnnotation<JsonToModel> {
 
       // Handle both Future<T> and T return types
       final effectiveReturnType = returnType.startsWith('Future<')
-          ? returnType.substring(7, returnType.length - 1) // Strip Future<...>
+          ? returnType.substring(7, returnType.length - 1)
           : returnType;
 
-      // Parse the return type to detect wrapper and inner types
+      // Parse wrapper and inner types (e.g., Response<List<MyModel>>)
       final matchOuter = RegExp(r'(\w+)<(.+)>').firstMatch(effectiveReturnType);
       final outerType = matchOuter?.group(1);
       final innerType = matchOuter?.group(2);
 
-      // Check if the inner type is a List<T>
+      // Parse List<T> inner type
       final listMatch = RegExp(r'List<(\w+)>').firstMatch(innerType ?? '');
       final listItemType = listMatch?.group(1);
 
@@ -97,7 +94,7 @@ class Json2ModelGenerator extends GeneratorForAnnotation<JsonToModel> {
           'Return type analysis: effectiveReturnType=$effectiveReturnType, outerType=$outerType, innerType=$innerType, listItemType=$listItemType');
 
       // Case 1: Wrapped List (e.g., Response<List<MyModel>> or Response<List<String>>)
-      if (wrapperType != null &&
+      if (wrapperType.isNotEmpty &&
           outerType == wrapperType &&
           listItemType != null) {
         _logger.info(
@@ -108,7 +105,7 @@ class Json2ModelGenerator extends GeneratorForAnnotation<JsonToModel> {
             '    return $wrapperType<List<$listItemType>>.$wrapperFromJson(');
         buffer.writeln('      json,');
 
-        // Handle primitive vs complex list item types
+        // Handle primitive types (no fromJson) vs complex types
         if (isPrimitiveType(listItemType)) {
           buffer.writeln(
               '      (data) => (data as List).cast<$listItemType>().toList(),');
@@ -119,13 +116,12 @@ class Json2ModelGenerator extends GeneratorForAnnotation<JsonToModel> {
         buffer.writeln('    );');
       }
       // Case 2: Wrapped Model (e.g., Response<MyModel>)
-      else if (wrapperType != null &&
+      else if (wrapperType.isNotEmpty &&
           outerType == wrapperType &&
           innerType != null) {
         _logger.info(
             'Generating code for wrapped model: $wrapperType<$innerType>');
-        buffer
-            .writeln('    // Deserialize JSON into a $wrapperType<$innerType>');
+        buffer.writeln('    // Deserialize JSON into a $wrapperType<$innerType>');
         buffer.writeln('    return $wrapperType<$innerType>.$wrapperFromJson(');
         buffer.writeln('      json,');
         buffer.writeln(
@@ -139,7 +135,7 @@ class Json2ModelGenerator extends GeneratorForAnnotation<JsonToModel> {
         buffer.writeln('    // Deserialize JSON into a List<$listItemType>');
         buffer.writeln('    return (json[\'data\'] as List)');
 
-        // Handle primitive vs complex list item types
+        // Handle primitive types (no fromJson) vs complex types
         if (isPrimitiveType(listItemType)) {
           buffer.writeln('        .cast<$listItemType>().toList();');
         } else {
