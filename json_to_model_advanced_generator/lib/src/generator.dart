@@ -1,10 +1,11 @@
 import 'dart:async';
-import 'package:build/build.dart';
-import 'package:logging/logging.dart';
-import 'package:source_gen/source_gen.dart';
+
 import 'package:analyzer/dart/element/element.dart';
+import 'package:build/build.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:json_to_model_advanced/json_to_model_advanced.dart';
+import 'package:logging/logging.dart';
+import 'package:source_gen/source_gen.dart';
 
 // Generator for classes annotated with @JsonToModel
 class Json2ModelGenerator extends GeneratorForAnnotation<JsonToModel> {
@@ -20,16 +21,17 @@ class Json2ModelGenerator extends GeneratorForAnnotation<JsonToModel> {
 
   @override
   FutureOr<String> generateForAnnotatedElement(
-      Element element,
-      ConstantReader annotation,
-      BuildStep buildStep,
-      ) {
+    Element element,
+    ConstantReader annotation,
+    BuildStep buildStep,
+  ) {
     // Log the start of processing for the element
     _logger.info('Processing element: ${element.name}');
 
     // Ensure the element is a class; skip if not
     if (element is! ClassElement) {
-      _logger.warning('Element ${element.name} is not a ClassElement, skipping.');
+      _logger
+          .warning('Element ${element.name} is not a ClassElement, skipping.');
       return '';
     }
 
@@ -121,7 +123,8 @@ class Json2ModelGenerator extends GeneratorForAnnotation<JsonToModel> {
           innerType != null) {
         _logger.info(
             'Generating code for wrapped model: $wrapperType<$innerType>');
-        buffer.writeln('    // Deserialize JSON into a $wrapperType<$innerType>');
+        buffer
+            .writeln('    // Deserialize JSON into a $wrapperType<$innerType>');
         buffer.writeln('    return $wrapperType<$innerType>.$wrapperFromJson(');
         buffer.writeln('      json,');
         buffer.writeln(
@@ -165,6 +168,6 @@ class Json2ModelGenerator extends GeneratorForAnnotation<JsonToModel> {
 
 // Factory function to create the builder
 Builder generatorFactoryBuilder(BuilderOptions options) => SharedPartBuilder(
-  [Json2ModelGenerator()],
-  'retrofit',
-);
+      [Json2ModelGenerator()],
+      'json2Model',
+    );
